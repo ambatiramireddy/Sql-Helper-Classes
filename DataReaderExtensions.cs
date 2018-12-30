@@ -51,6 +51,28 @@ namespace AddAppAPI.Extensions
             return list;
         }
 
+        public static List<T> ToValueTypeList<T>(this SqlDataReader reader) where T : struct
+        {
+            var list = new List<T>();
+            while (reader.Read())
+            {
+                list.Add((T)reader.GetValue(0));
+            }
+
+            return list;
+        }
+
+        public static List<KeyValuePair<I, N>> ToKeyValuePairList<I, N>(this SqlDataReader reader)
+        {
+            var dictionary = new List<KeyValuePair<I, N>>();
+            while (reader.Read())
+            {
+                dictionary.Add(new KeyValuePair<I, N>((I)reader.GetValue(0), (N)reader.GetValue(1)));
+            }
+
+            return dictionary;
+        }
+
         public static Dictionary<I, N> ToDictionary<I, N>(this SqlDataReader reader)
         {
             var dictionary = new Dictionary<I, N>();
