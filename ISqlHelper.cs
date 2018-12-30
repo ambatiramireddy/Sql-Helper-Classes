@@ -12,7 +12,9 @@ namespace AddAppAPI.Helpers
     {
         Task<List<T>> SelectAllAsync<T>() where T : class, new();
 
-        Task<List<R>> SelectIdsAsync<T, R>(List<Parameter> parameters) where T : class, new() where R : struct;
+        Task<List<R>> SelectIdsByReferenceKeyAsync<T, R>(List<Parameter> parameters) where T : class, new() where R : struct;
+
+        Task<List<T>> SelectAllByReferenceKeyAsync<T>(List<Parameter> parameters) where T : class, new();
 
         Task<List<KeyValuePair<K, V>>> SelectIdNamePairsAsync<T, K, V>() where T : class, new();
 

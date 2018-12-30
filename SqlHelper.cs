@@ -56,7 +56,8 @@ namespace AddAppAPI.Helpers
             using (var con = this.GetConnection())
             {
                 var typeName = typeof(T).Name;
-                var procName = string.Format("usp_SelectAll_{0}", (typeName.EndsWith("y") ? $"{typeName.TrimEnd('y')}ies" : $"{typeName}s"));
+                var pluralTypename = (typeName.EndsWith("y") ? $"{typeName.TrimEnd('y')}ies" : $"{typeName}s");
+                var procName = string.Format("usp_SelectAll_{0}", pluralTypename);
                 using (var cmd = new SqlCommand(procName, con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -71,7 +72,7 @@ namespace AddAppAPI.Helpers
             return items;
         }
 
-        public async Task<List<R>> SelectIdsAsync<T, R>(List<Parameter> parameters) where T : class, new() where R : struct
+        public async Task<List<R>> SelectIdsByReferenceKeyAsync<T, R>(List<Parameter> parameters) where T : class, new() where R : struct
         {
             List<R> items = null;
             using (var con = this.GetConnection())
@@ -90,6 +91,34 @@ namespace AddAppAPI.Helpers
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         items = reader.ToValueTypeList<R>();
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        public async Task<List<T>> SelectAllByReferenceKeyAsync<T>(List<Parameter> parameters) where T : class, new()
+        {
+            List<T> items = null;
+            using (var con = this.GetConnection())
+            {
+                var typeName = typeof(T).Name;
+                var pluralTypename = (typeName.EndsWith("y") ? $"{typeName.TrimEnd('y')}ies" : $"{typeName}s");
+                var procName = string.Format("usp_Select_{0}_By_{1}", pluralTypename, parameters.First().Name);
+                using (var cmd = new SqlCommand(procName, con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    await con.OpenAsync();
+
+                    foreach (var nv in parameters)
+                    {
+                        cmd.Parameters.AddWithValue($"@{nv.Name}", nv.Value);
+                    }
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        items = reader.ToList<T>();
                     }
                 }
             }
