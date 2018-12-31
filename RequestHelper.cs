@@ -57,7 +57,7 @@ namespace AddAppAPI.Helpers
                             ScheduledDuration = scheduledDuration,
                         });
 
-                        scheduledDate = scheduledDate.AddSeconds((double)request.RecurForEvery);
+                        scheduledDate = scheduledDate.AddSeconds(scheduledDuration + (double)request.RecurForEvery);
                     }
                 }
             }
